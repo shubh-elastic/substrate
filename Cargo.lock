@@ -1808,6 +1808,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "custom-pallet"
+version = "0.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+]
+
+[[package]]
 name = "cxx"
 version = "1.0.95"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6777,6 +6791,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-mapper"
+version = "0.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+]
+
+[[package]]
 name = "pallet-membership"
 version = "4.0.0-dev"
 dependencies = [
@@ -7340,6 +7368,7 @@ dependencies = [
 name = "pallet-staking"
 version = "4.0.0-dev"
 dependencies = [
+ "custom-pallet",
  "frame-benchmarking",
  "frame-election-provider-support",
  "frame-support",
@@ -7348,6 +7377,7 @@ dependencies = [
  "pallet-authorship",
  "pallet-bags-list",
  "pallet-balances",
+ "pallet-mapper",
  "pallet-session",
  "pallet-staking-reward-curve",
  "pallet-timestamp",

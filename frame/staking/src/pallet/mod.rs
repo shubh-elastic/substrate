@@ -39,6 +39,11 @@ use sp_runtime::{
 use sp_staking::{EraIndex, SessionIndex};
 use sp_std::prelude::*;
 
+
+use custom_pallet::NFTs;
+use pallet_mapper::ValMappers;
+
+
 mod impls;
 
 pub use impls::*;
@@ -83,7 +88,7 @@ pub mod pallet {
 	}
 
 	#[pallet::config]
-	pub trait Config: frame_system::Config {
+	pub trait Config: frame_system::Config + custom_pallet::Config + pallet_mapper::Config{
 		/// The staking balance.
 		type Currency: LockableCurrency<
 			Self::AccountId,
@@ -1092,6 +1097,11 @@ pub mod pallet {
 
 			// ensure their commission is correct.
 			ensure!(prefs.commission >= MinCommission::<T>::get(), Error::<T>::CommissionTooLow);
+
+			let acc = ValMappers::<T>::get(&controller).ok_or(Error::<T>::NotController)?;
+
+			ensure!(NFTs::<T>::contains_key(&acc),Error::<T>::CommissionTooLow );
+
 
 			// Only check limits if they are not already a validator.
 			if !Validators::<T>::contains_key(stash) {
