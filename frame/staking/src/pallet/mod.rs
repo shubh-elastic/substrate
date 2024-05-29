@@ -761,6 +761,10 @@ pub mod pallet {
 		CommissionTooLow,
 		/// Some bound is not met.
 		BoundNotMet,
+		/// NFT Not present.
+		NFTNotPresent,
+		///ValMap nt there.
+		ValMapNotPresent,
 	}
 
 	#[pallet::hooks]
@@ -1098,9 +1102,9 @@ pub mod pallet {
 			// ensure their commission is correct.
 			ensure!(prefs.commission >= MinCommission::<T>::get(), Error::<T>::CommissionTooLow);
 
-			let acc = ValMappers::<T>::get(&controller).ok_or(Error::<T>::NotController)?;
+			let acc = ValMappers::<T>::get(&controller).ok_or(Error::<T>::ValMapNotPresent)?;
 
-			ensure!(NFTs::<T>::contains_key(&acc),Error::<T>::CommissionTooLow );
+			ensure!(NFTs::<T>::contains_key(&acc),Error::<T>::NFTNotPresent);
 
 
 			// Only check limits if they are not already a validator.
