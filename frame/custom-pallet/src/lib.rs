@@ -6,6 +6,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 pub use pallet::*;
+use sp_std::vec::Vec;
 
 #[frame_support::pallet]
 pub mod pallet {
