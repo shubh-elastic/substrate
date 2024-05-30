@@ -41,7 +41,7 @@ use sp_runtime::{
 };
 use sp_staking::{EraIndex, SessionIndex};
 use sp_std::prelude::*;
-use sp_core::{crypto::UncheckedInto, sr25519, Pair, Public, U256, H160};
+
 
 use hex_literal::hex;
 use custom_pallet::NFTs;
@@ -76,24 +76,24 @@ pub mod pallet {
 	/// The current storage version.
 	const STORAGE_VERSION: StorageVersion = StorageVersion::new(13);
 
-	pub type AccountId = <AccountPublic as IdentifyAccount>::AccountId;
+	// pub type AccountId = <AccountPublic as IdentifyAccount>::AccountId;
 
-	type AccountPublic = <MultiSignature as Verify>::Signer;
+	// type AccountPublic = <MultiSignature as Verify>::Signer;
 
 
-	pub fn get_from_seed<TPublic: Public>(seed: &str) -> <TPublic::Pair as Pair>::Public {
-		TPublic::Pair::from_string(&format!("//{}", seed), None)
-			.expect("static values are valid; qed")
-			.public()
-	}
+	// pub fn get_from_seed<TPublic: Public>(seed: &str) -> <TPublic::Pair as Pair>::Public {
+	// 	TPublic::Pair::from_string(&format!("//{}", seed), None)
+	// 		.expect("static values are valid; qed")
+	// 		.public()
+	// }
 	
-	/// Helper function to generate an account ID from seed
-	pub fn get_account_id_from_seed<TPublic: Public>(seed: &str) -> AccountId
-	where
-		AccountPublic: From<<TPublic::Pair as Pair>::Public>,
-	{
-		AccountPublic::from(get_from_seed::<TPublic>(seed)).into_account()
-	}
+	// /// Helper function to generate an account ID from seed
+	// pub fn get_account_id_from_seed<TPublic: Public>(seed: &str) -> AccountId
+	// where
+	// 	AccountPublic: From<<TPublic::Pair as Pair>::Public>,
+	// {
+	// 	AccountPublic::from(get_from_seed::<TPublic>(seed)).into_account()
+	// }
 
 	#[pallet::pallet]
 	#[pallet::storage_version(STORAGE_VERSION)]

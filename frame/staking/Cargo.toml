@@ -23,7 +23,6 @@ sp-io = { version = "23.0.0", default-features = false, path = "../../primitives
 sp-runtime = { version = "24.0.0", default-features = false, path = "../../primitives/runtime", features = ["serde"] }
 sp-staking = { version = "4.0.0-dev", default-features = false, path = "../../primitives/staking", features = ["serde"] }
 sp-std = { version = "8.0.0", default-features = false, path = "../../primitives/std" }
-sp-core = { version = "21.0.0", path = "../../primitives/core" }
 frame-support = { version = "4.0.0-dev", default-features = false, path = "../support" }
 frame-system = { version = "4.0.0-dev", default-features = false, path = "../system" }
 pallet-session = { version = "4.0.0-dev", default-features = false, features = [
@@ -43,6 +42,7 @@ rand_chacha = { version = "0.2", default-features = false, optional = true }
 
 [dev-dependencies]
 sp-tracing = { version = "10.0.0", path = "../../primitives/tracing" }
+sp-core = { version = "21.0.0", path = "../../primitives/core" }
 sp-npos-elections = { version = "4.0.0-dev", path = "../../primitives/npos-elections" }
 pallet-balances = { version = "4.0.0-dev", path = "../balances" }
 pallet-timestamp = { version = "4.0.0-dev", path = "../timestamp" }
@@ -65,7 +65,6 @@ std = [
 	"frame-support/std",
 	"sp-runtime/std",
 	"sp-staking/std",
-	"sp-core/std",
 	"pallet-session/std",
 	"custom-pallet/std",
 	"pallet-mapper/std",
