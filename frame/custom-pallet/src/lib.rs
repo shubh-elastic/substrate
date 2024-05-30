@@ -1,58 +1,66 @@
+//! ## Genesis Config
+//!
+//! The  pallet depends on the [`GenesisConfig`].
+
 // All pallets must be configured for `no_std`.
 #![cfg_attr(not(feature = "std"), no_std)]
 
-// Re-export pallet items so that they can be accessed from the crate namespace.
 pub use pallet::*;
 
 #[frame_support::pallet]
 pub mod pallet {
- use frame_support::pallet_prelude::*;
- use frame_system::pallet_prelude::*;
- use sp_core::H160;
+    use frame_support::{pallet_prelude::*, storage::types::StorageMap};
+    use frame_system::pallet_prelude::*;
+    use sp_core::H160;
 
- #[pallet::pallet]
- pub struct Pallet<T>(_);
+    #[pallet::pallet]
+    pub struct Pallet<T>(_);
 
+    #[pallet::config]
+    pub trait Config: frame_system::Config {
+        type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
+    }
 
+    #[pallet::event]
+    #[pallet::generate_deposit(pub(super) fn deposit_event)]
+    pub enum Event<T: Config> {
+        NFTAdded { who: H160, val: u32 },
+        ClaimRevoked { who: T::AccountId, claim: T::Hash },
+    }
 
-//  #[pallet::config]  // <-- Step 2. code block will replace this.
-/// Configure the pallet by specifying the parameters and types on which it depends.
-#[pallet::config]
-pub trait Config: frame_system::Config {
- /// Because this pallet emits events, it depends on the runtime's definition of an event.
- type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
-}
-//  #[pallet::event]   // <-- Step 3. code block will replace this.
+    #[pallet::error]
+    pub enum Error<T> {
+        AlreadyClaimed,
+        NoSuchClaim,
+        NotClaimOwner,
+    }
 
-// Pallets use events to inform users when important changes are made.
-// Event documentation should end with an array that provides descriptive names for parameters.
-#[pallet::event]
-#[pallet::generate_deposit(pub(super) fn deposit_event)]
-pub enum Event<T: Config> {
- /// Event emitted when a claim has been created.
- NFTAdded { who: H160, val: u32 },
- /// Event emitted when a claim is revoked by the owner.
- ClaimRevoked { who: T::AccountId, claim: T::Hash },
-}
-
-
-//  #[pallet::error]   // <-- Step 4. code block will replace this.
-
-#[pallet::error]
-pub enum Error<T> {
- /// The claim already exists.
- AlreadyClaimed,
- /// The claim does not exist, so it cannot be revoked.
- NoSuchClaim,
- /// The claim is owned by another account, so caller can't revoke it.
- NotClaimOwner,
-}
+    #[pallet::storage]
+    #[pallet::getter(fn nfts)]
+    pub type NFTs<T: Config> = StorageMap<_, Blake2_128Concat, H160, u32>;
 
 
-//  #[pallet::storage] // <-- Step 5. code block will replace this.
-#[pallet::storage]
-#[pallet::getter(fn nfts)]
-pub  type NFTs<T: Config> = StorageMap<_, Blake2_128Concat, H160, u32>;
+
+    #[pallet::genesis_config]
+    #[derive(frame_support::DefaultNoBound)]
+    pub struct GenesisConfig<T:Config> {
+        pub nft_mappers: Vec<(H160, u32)>,
+        pub account : PhantomData<T>,
+    }
+
+
+
+    #[pallet::genesis_build]
+    impl<T: Config> BuildGenesisConfig for GenesisConfig<T> {
+        fn build(&self) {
+            for (account, value) in &self.nft_mappers {
+                NFTs::<T>::insert(account, *value);
+            }
+        }
+    }
+
+
+
 
 // pub(super) type Claims<T: Config> = StorageMap<_, Blake2_128Concat, T::Hash, (T::AccountId, BlockNumberFor<T>)>;
 
@@ -102,6 +110,20 @@ impl<T: Config> Pallet<T> {
 //    Ok(())
 //  }
 }
+// #[pallet::genesis_config]
+// #[derive(frame_support::DefaultNoBound)]
+// pub struct GenesisConfig<T: Config> {
+//     pub nft_mappers: Vec<(H160, u32)>,
+// }
+
+// #[pallet::genesis_build]
+// impl<T: Config> BuildGenesisConfig for GenesisConfig<T> {
+//     fn build(&self) {
+//         for (account, value) in &self.nft_mappers {
+//             NFTs::<T>::insert(account, *value);
+//         }
+//     }
+// }
 }
 
 pub mod weights {

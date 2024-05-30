@@ -1,3 +1,7 @@
+//! ## Genesis Config
+//!
+//! The  pallet depends on the [`GenesisConfig`].
+
 #![cfg_attr(not(feature = "std"), no_std)]
 
 pub use pallet::*;
@@ -36,6 +40,29 @@ pub mod pallet {
     pub type ValMappers<T: Config> = StorageMap<_, Blake2_128Concat, T::AccountId, H160>;
 
 
+    #[pallet::genesis_config]
+    #[derive(frame_support::DefaultNoBound)]
+    pub struct GenesisConfig<T: Config> {
+        pub val_mappers: Vec<(T::AccountId, H160)>,
+    }
+
+    // #[cfg(feature = "std")]
+    //     impl<T: Config> Default for GenesisConfig<T> {
+    //         fn default() -> Self {
+    //             Self { val_mappers: vec![] }
+    //         }
+    //     }
+
+    #[pallet::genesis_build]
+    impl<T: Config> BuildGenesisConfig for GenesisConfig<T> {
+        fn build(&self) {
+            for (account, value) in &self.val_mappers {
+                ValMappers::<T>::insert(account, *value);
+            }
+        }
+    }
+
+
 
 
 
@@ -69,25 +96,6 @@ impl<T: Config> Pallet<T> {
  }
 
 
-//  pub fn read_valmap(account: T::) -> DispatchResult {
-//   // Check that the extrinsic was signed and get the signer.
-//   // This function will return an error if the extrclaiminsic is not signed.
-
-//   // Verify that the specified claim has not already been stored.
-//  //  ensure!(!Claims::<T>::contains_key(&claim), Error::<T>::AlreadyClaimed);
-
-//   // Get the block number from the FRAME System pallet.
-//  //  let current_block = <frame_system::Pallet<T>>::block_number();
-
-//   // Store the claim with the sender and block number.
-//   ValMappers::<T>::get(account);
-
-//   // Emit an event that the claim was created.
-
-
-//   Ok(())
-// }
-
 //  #[pallet::weight(Weight::default())]
 //  #[pallet::call_index(1)]
 //  pub fn revoke_claim(origin: OriginFor<T>, claim: T::Hash) -> DispatchResult {
@@ -108,8 +116,11 @@ impl<T: Config> Pallet<T> {
 //    Self::deposit_event(Event::ClaimRevoked { who: sender, claim });
 //    Ok(())
 //  }
+
 }
+
 }
+
 
 pub mod weights {
   // Placeholder struct for the pallet weights

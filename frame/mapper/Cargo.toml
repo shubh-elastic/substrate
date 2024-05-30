@@ -14,6 +14,7 @@ repository = "https://github.com/AstarNetwork/Astar"
 parity-scale-codec = { version = "3.6.1", default-features = false, features = ["derive"] }
 scale-info = { version = "2.5.0", default-features = false }
 sp-core = { version = "21.0.0", default-features = false, path = "../../primitives/core" }
+sp-runtime = { version = "24.0.0", default-features = false, path = "../../primitives/runtime" }
 #frame deps
 
 
@@ -25,7 +26,7 @@ frame-system = { version = "4.0.0-dev", default-features = false, path = "../sys
 [dev-dependencies]
 
 sp-io = { version = "23.0.0", default-features = false, path = "../../primitives/io" }
-sp-runtime = { version = "24.0.0", default-features = false, path = "../../primitives/runtime" }
+
 
 
 [features]

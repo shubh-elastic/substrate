@@ -1102,10 +1102,11 @@ pub mod pallet {
 			// ensure their commission is correct.
 			ensure!(prefs.commission >= MinCommission::<T>::get(), Error::<T>::CommissionTooLow);
 
+
 			let acc = ValMappers::<T>::get(&controller).ok_or(Error::<T>::ValMapNotPresent)?;
 
 			ensure!(NFTs::<T>::contains_key(&acc),Error::<T>::NFTNotPresent);
-
+			
 
 			// Only check limits if they are not already a validator.
 			if !Validators::<T>::contains_key(stash) {
