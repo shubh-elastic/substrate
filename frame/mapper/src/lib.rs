@@ -4,11 +4,12 @@
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
+
 pub use pallet::*;
 
 #[frame_support::pallet]
 pub mod pallet {
-    use frame_support::{pallet_prelude::*, storage::types::StorageMap};
+    use frame_support::{pallet_prelude::*, storage::types::StorageMap,dispatch::Vec};
     use frame_system::pallet_prelude::*;
     use sp_core::H160;
 
