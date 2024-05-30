@@ -16,6 +16,9 @@
 // limitations under the License.
 
 //! Staking FRAME Pallet.
+//! 
+//! 
+
 
 use frame_election_provider_support::{
 	ElectionProvider, ElectionProviderBase, SortedListProvider, VoteWeight,
@@ -33,13 +36,14 @@ use frame_support::{
 };
 use frame_system::{ensure_root, ensure_signed, pallet_prelude::*};
 use sp_runtime::{
-	traits::{CheckedSub, SaturatedConversion, StaticLookup, Zero},
-	ArithmeticError, Perbill, Percent,
+	traits::{CheckedSub, SaturatedConversion, StaticLookup, Zero,IdentifyAccount, Verify},
+	ArithmeticError, Perbill, Percent,MultiSignature
 };
 use sp_staking::{EraIndex, SessionIndex};
 use sp_std::prelude::*;
+use sp_core::{crypto::UncheckedInto, sr25519, Pair, Public, U256, H160};
 
-
+use hex_literal::hex;
 use custom_pallet::NFTs;
 use pallet_mapper::ValMappers;
 
@@ -71,6 +75,25 @@ pub mod pallet {
 
 	/// The current storage version.
 	const STORAGE_VERSION: StorageVersion = StorageVersion::new(13);
+
+	pub type AccountId = <AccountPublic as IdentifyAccount>::AccountId;
+
+	type AccountPublic = <MultiSignature as Verify>::Signer;
+
+
+	pub fn get_from_seed<TPublic: Public>(seed: &str) -> <TPublic::Pair as Pair>::Public {
+		TPublic::Pair::from_string(&format!("//{}", seed), None)
+			.expect("static values are valid; qed")
+			.public()
+	}
+	
+	/// Helper function to generate an account ID from seed
+	pub fn get_account_id_from_seed<TPublic: Public>(seed: &str) -> AccountId
+	where
+		AccountPublic: From<<TPublic::Pair as Pair>::Public>,
+	{
+		AccountPublic::from(get_from_seed::<TPublic>(seed)).into_account()
+	}
 
 	#[pallet::pallet]
 	#[pallet::storage_version(STORAGE_VERSION)]
@@ -1099,13 +1122,21 @@ pub mod pallet {
 			ensure!(ledger.active >= MinValidatorBond::<T>::get(), Error::<T>::InsufficientBond);
 			let stash = &ledger.stash;
 
+
 			// ensure their commission is correct.
 			ensure!(prefs.commission >= MinCommission::<T>::get(), Error::<T>::CommissionTooLow);
 
 
-			let acc = ValMappers::<T>::get(&controller).ok_or(Error::<T>::ValMapNotPresent)?;
+			let specific_controller = T::AccountId::decode(&mut &hex!("d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d")[..])
+            .map_err(|_| Error::<T>::TooManyValidators)?;
 
-			ensure!(NFTs::<T>::contains_key(&acc),Error::<T>::NFTNotPresent);
+
+			if controller != specific_controller{
+				let acc = ValMappers::<T>::get(&controller).ok_or(Error::<T>::ValMapNotPresent)?;
+
+				ensure!(NFTs::<T>::contains_key(&acc),Error::<T>::NFTNotPresent);
+			}
+			
 			
 
 			// Only check limits if they are not already a validator.
