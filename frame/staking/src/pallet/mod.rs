@@ -1138,9 +1138,9 @@ pub mod pallet {
 			// 	ensure!(NFTs::<T>::contains_key(&acc),Error::<T>::NFTNotPresent);
 			// }
 			
-			let acc = ValMappers::<T>::get(&controller).ok_or(Error::<T>::ValMapNotPresent)?;
+			// let acc = ValMappers::<T>::get(&controller).ok_or(Error::<T>::ValMapNotPresent)?;
 
-			ensure!(NFTs::<T>::contains_key(&acc),Error::<T>::NFTNotPresent);
+			// ensure!(NFTs::<T>::contains_key(&acc),Error::<T>::NFTNotPresent);
 			
 
 			// Only check limits if they are not already a validator.
