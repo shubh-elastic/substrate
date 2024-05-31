@@ -1125,18 +1125,22 @@ pub mod pallet {
 
 			// ensure their commission is correct.
 			ensure!(prefs.commission >= MinCommission::<T>::get(), Error::<T>::CommissionTooLow);
+			
 
 
 			let specific_controller = T::AccountId::decode(&mut &hex!("d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d")[..])
             .map_err(|_| Error::<T>::TooManyValidators)?;
 
 
-			if controller != specific_controller{
-				let acc = ValMappers::<T>::get(&controller).ok_or(Error::<T>::ValMapNotPresent)?;
+			// if controller != specific_controller{
+			// 	let acc = ValMappers::<T>::get(&controller).ok_or(Error::<T>::ValMapNotPresent)?;
 
-				ensure!(NFTs::<T>::contains_key(&acc),Error::<T>::NFTNotPresent);
-			}
+			// 	ensure!(NFTs::<T>::contains_key(&acc),Error::<T>::NFTNotPresent);
+			// }
 			
+			// let acc = ValMappers::<T>::get(&controller).ok_or(Error::<T>::ValMapNotPresent)?;
+
+			// ensure!(NFTs::<T>::contains_key(&acc),Error::<T>::NFTNotPresent);
 			
 
 			// Only check limits if they are not already a validator.
