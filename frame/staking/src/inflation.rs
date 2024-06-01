@@ -22,6 +22,8 @@
 
 use sp_runtime::{curve::PiecewiseLinear, traits::AtLeast32BitUnsigned, Perbill};
 
+// use std::convert::From<u128>;
+
 /// The total payout to all validators (and their nominators) per era and maximum payout.
 ///
 /// Defined as such:
@@ -36,7 +38,7 @@ pub fn compute_total_payout<N>(
 	era_duration: u64,
 ) -> (N, N)
 where
-	N: AtLeast32BitUnsigned + Clone +  std::convert::From<u128>,
+	N: AtLeast32BitUnsigned + Clone +  core::convert::From<u128>,
 {
 	// Milliseconds per year for the Julian year (365.25 days).
 	// const MILLISECONDS_PER_YEAR: u64 = 1000 * 3600 * 24 * 36525 / 100;
