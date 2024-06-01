@@ -36,7 +36,7 @@ pub fn compute_total_payout<N>(
 	era_duration: u64,
 ) -> (N, N)
 where
-	N: AtLeast32BitUnsigned + Clone ,
+	N: AtLeast32BitUnsigned + Clone,
 {
 	// Milliseconds per year for the Julian year (365.25 days).
 	// const MILLISECONDS_PER_YEAR: u64 = 1000 * 3600 * 24 * 36525 / 100;
@@ -47,7 +47,7 @@ where
 	// 		.calculate_for_fraction_times_denominator(npos_token_staked, total_tokens.clone());
 	// let maximum = portion * (yearly_inflation.maximum * total_tokens);
 	let payout = N::from(288000u32);
-	let maximum = N::from(144000u32);
+	let maximum = N::from(1440000u32);
 	(payout, maximum)
 }
 
