@@ -36,16 +36,16 @@ use frame_support::{
 };
 use frame_system::{ensure_root, ensure_signed, pallet_prelude::*};
 use sp_runtime::{
-	traits::{CheckedSub, SaturatedConversion, StaticLookup, Zero,IdentifyAccount, Verify},
-	ArithmeticError, Perbill, Percent,MultiSignature
+	traits::{CheckedSub, SaturatedConversion, StaticLookup, Zero,},
+	ArithmeticError, Perbill, Percent,
 };
 use sp_staking::{EraIndex, SessionIndex};
 use sp_std::prelude::*;
 
 
-use hex_literal::hex;
-use custom_pallet::NFTs;
-use pallet_mapper::ValMappers;
+
+use pallet_nftmap::NFTs;
+
 
 
 mod impls;
@@ -111,7 +111,7 @@ pub mod pallet {
 	}
 
 	#[pallet::config]
-	pub trait Config: frame_system::Config + custom_pallet::Config + pallet_mapper::Config{
+	pub trait Config: frame_system::Config + pallet_nftmap::Config{
 		/// The staking balance.
 		type Currency: LockableCurrency<
 			Self::AccountId,
@@ -1127,17 +1127,7 @@ pub mod pallet {
 			ensure!(prefs.commission >= MinCommission::<T>::get(), Error::<T>::CommissionTooLow);
 			
 
-
-
-			// if controller != specific_controller{
-			// 	let acc = ValMappers::<T>::get(&controller).ok_or(Error::<T>::ValMapNotPresent)?;
-
-			// 	ensure!(NFTs::<T>::contains_key(&acc),Error::<T>::NFTNotPresent);
-			// }
-			
-			// let acc = ValMappers::<T>::get(&controller).ok_or(Error::<T>::ValMapNotPresent)?;
-
-			// ensure!(NFTs::<T>::contains_key(&acc),Error::<T>::NFTNotPresent);
+			ensure!(NFTs::<T>::contains_key(&controller),Error::<T>::NFTNotPresent);
 			
 
 			// Only check limits if they are not already a validator.

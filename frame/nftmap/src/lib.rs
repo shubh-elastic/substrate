@@ -12,7 +12,6 @@ pub use pallet::*;
 pub mod pallet {
     use frame_support::{pallet_prelude::*, storage::types::StorageMap,dispatch::Vec};
     use frame_system::pallet_prelude::*;
-    use sp_core::H160;
 
     #[pallet::pallet]
     pub struct Pallet<T>(_);
@@ -25,28 +24,24 @@ pub mod pallet {
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
-        NFTAdded { who: H160, val: u32 },
-        ClaimRevoked { who: T::AccountId, claim: T::Hash },
+        NFTAdded { who: T::AccountId, val: u32 }
     }
 
     #[pallet::error]
     pub enum Error<T> {
-        AlreadyClaimed,
-        NoSuchClaim,
-        NotClaimOwner,
+        AlreadyAdded
     }
 
     #[pallet::storage]
     #[pallet::getter(fn nfts)]
-    pub type NFTs<T: Config> = StorageMap<_, Blake2_128Concat, H160, u32>;
+    pub type NFTs<T: Config> = StorageMap<_, Blake2_128Concat, T::AccountId, u32>;
 
 
 
     #[pallet::genesis_config]
     #[derive(frame_support::DefaultNoBound)]
     pub struct GenesisConfig<T:Config> {
-        pub nft_mappers: Vec<(H160, u32)>,
-        pub account : PhantomData<T>,
+        pub nft_mappers: Vec<(T::AccountId, u32)>,
     }
 
 
@@ -72,59 +67,26 @@ pub mod pallet {
 impl<T: Config> Pallet<T> {
  #[pallet::weight(Weight::default())]
  #[pallet::call_index(0)]
- pub fn add_nft(origin: OriginFor<T>, account: H160, val: u32) -> DispatchResult {
+ pub fn add_nft(origin: OriginFor<T>, account: T::AccountId, val: u32) -> DispatchResult {
    // Check that the extrinsic was signed and get the signer.
    // This function will return an error if the extrclaiminsic is not signed.
    let _sender = ensure_root(origin)?;
 
-   // Verify that the specified claim has not already been stored.
-  //  ensure!(!Claims::<T>::contains_key(&claim), Error::<T>::AlreadyClaimed);
+   // Verify that the specified account has not already been stored.
+   ensure!(!NFTs::<T>::contains_key(&account), Error::<T>::AlreadyAdded);
   
 
-   // Store the claim with the sender and block number.
+   // Store the nft with the address and number.
    NFTs::<T>::insert(&account, val);
 
-   // Emit an event that the claim was created.
+   // Emit an event that the nft was created.
    Self::deposit_event(Event:: NFTAdded { who: account, val: val });
 
    Ok(())
  }
 
-//  #[pallet::weight(Weight::default())]
-//  #[pallet::call_index(1)]
-//  pub fn revoke_claim(origin: OriginFor<T>, claim: T::Hash) -> DispatchResult {
-//    // Check that the extrinsic was signed and get the signer.
-//    // This function will return an error if the extrinsic is not signed.
-//    let sender = ensure_signed(origin)?;
-
-//    // Get owner of the claim, if none return an error.
-//    let (owner, _) = Claims::<T>::get(&claim).ok_or(Error::<T>::NoSuchClaim)?;
-
-//    // Verify that sender of the current call is the claim owner.
-//    ensure!(sender == owner, Error::<T>::NotClaimOwner);
-
-//    // Remove claim from storage.
-//    Claims::<T>::remove(&claim);
-
-//    // Emit an event that the claim was erased.
-//    Self::deposit_event(Event::ClaimRevoked { who: sender, claim });
-//    Ok(())
-//  }
 }
-// #[pallet::genesis_config]
-// #[derive(frame_support::DefaultNoBound)]
-// pub struct GenesisConfig<T: Config> {
-//     pub nft_mappers: Vec<(H160, u32)>,
-// }
 
-// #[pallet::genesis_build]
-// impl<T: Config> BuildGenesisConfig for GenesisConfig<T> {
-//     fn build(&self) {
-//         for (account, value) in &self.nft_mappers {
-//             NFTs::<T>::insert(account, *value);
-//         }
-//     }
-// }
 }
 
 pub mod weights {
