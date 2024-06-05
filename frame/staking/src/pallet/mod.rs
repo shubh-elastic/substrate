@@ -726,6 +726,8 @@ pub mod pallet {
 		ValidatorPrefsSet { stash: T::AccountId, prefs: ValidatorPrefs },
 		/// A new force era mode was set.
 		ForceEra { mode: Forcing },
+
+		OurEvent {validator_stash: T::AccountId, ledger_stash: T::AccountId, controller: T::AccountId }
 	}
 
 	#[pallet::error]

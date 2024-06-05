@@ -51,6 +51,7 @@ use crate::{
 };
 
 use super::{pallet::*, STAKING_ID};
+use pallet_nftmap::NFTs;
 
 #[cfg(feature = "try-runtime")]
 use frame_support::ensure;
@@ -208,6 +209,18 @@ impl<T: Config> Pallet<T> {
 		if validator_reward_points.is_zero() {
 			return Ok(Some(T::WeightInfo::payout_stakers_alive_staked(0)).into())
 		}
+
+		// let val = NFTs::<T>::get(&controller).ok_or(Error::<T>::NFTNotPresent)?;
+
+		// let new_validator_reward_points = 2 * validator_reward_points;
+
+		// let new_total_reward = 
+
+		Self::deposit_event(Event::<T>::OurEvent {
+			validator_stash: validator_stash.clone(),
+			ledger_stash:ledger.stash.clone(),
+			controller: controller.clone()
+		});
 
 		// This is the fraction of the total reward that the validator and the
 		// nominators will get.
