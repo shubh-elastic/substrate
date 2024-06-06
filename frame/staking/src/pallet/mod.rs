@@ -739,7 +739,7 @@ pub mod pallet {
 
 		Points {total: u32, validator: u32},
 
-		TestVal{validator: T::AccountId, points: u32},
+		TestVal{validator: T::AccountId, points: Option<u32>},
 
 
 	}

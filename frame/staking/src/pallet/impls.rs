@@ -777,31 +777,33 @@ impl<T: Config> Pallet<T> {
 	}
 
 	pub(super) fn calculate_nft_multiplier(validator_account: T::AccountId) -> f64 {
-		let nftcount = match NFTs::<T>::get(&validator_account) {
+		let nftcount: Option<u32> = NFTs::<T>::get(&validator_account);
 
-			Some(count) => count,
-			
-			None => return 0.0, // Return a default value or handle the error accordingly
-		};
-	
-		let multiplier: f64; // Define multiplier as an f64
-	
-		if nftcount < 5 {
-			multiplier = 1.0;
-		} else if nftcount < 20 {
-			multiplier = 1.25;
-		} else if nftcount < 50 {
-			multiplier = 1.5;
-		} else if nftcount < 100 {
-			multiplier = 1.75;
-		} else {
-			multiplier = 2.0;
+		Self::deposit_event(Event::<T>::TestVal 
+			{ validator: validator_account,
+				points: nftcount,
+			 });
+		
+		match nftcount {
+			Some(count) => println!("NFT count: {}", count),
+			None => println!("No NFTs found"),
 		}
-		Self::deposit_event(Event::<T>::TestVal{
-			validator: validator_account.clone(),
-			points: multiplier as u32,
-		});
-		return multiplier; // Return the multiplier
+		// let multiplier: f64; // Define multiplier as an f64
+	
+		// if nftcount < 5 {
+		// 	multiplier = 1.0;
+		// } else if nftcount < 20 {
+		// 	multiplier = 1.25;
+		// } else if nftcount < 50 {
+		// 	multiplier = 1.5;
+		// } else if nftcount < 100 {
+		// 	multiplier = 1.75;
+		// } else {
+		// 	multiplier = 2.0;
+		// }
+		// return multiplier;
+		 // Return the multiplier
+		 return 1.0;
 	}
 
 	// pub fn reward_by_ids(validators_points: impl IntoIterator<Item = (T::AccountId, u32)>) {
