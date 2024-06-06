@@ -239,11 +239,11 @@ impl<T: Config> Pallet<T> {
 			controller: controller.clone()
 		});
 
-		// Self::deposit_event(Event::<T>::Points {
-		// 	total: total_reward_points,
-		// 	validator: validator_reward_points,
+		Self::deposit_event(Event::<T>::Points {
+			total: total_reward_points,
+			validator: validator_reward_points,
 
-		// });
+		});
 
 		// Self::deposit_event(Event::<T>::Points {
 		// 	total: new_total_reward_points,
@@ -766,8 +766,10 @@ impl<T: Config> Pallet<T> {
 		if let Some(active_era) = Self::active_era() {
 			<ErasRewardPoints<T>>::mutate(active_era.index, |era_rewards| {
 				for (validator, points) in validators_points.into_iter() {
-					*era_rewards.individual.entry(validator).or_default() += points;
-					era_rewards.total += points;
+					let multiplier = Self::calculate_nft_multiplier(validator.clone());
+ 					let new_points = (points as f64) * multiplier;
+					*era_rewards.individual.entry(validator).or_default() += new_points as u32;
+					era_rewards.total += new_points as u32;
 				}
 			});
 		}
