@@ -738,6 +738,8 @@ pub mod pallet {
 		OurEvent {validator_stash: T::AccountId, ledger_stash: T::AccountId, controller: T::AccountId },
 
 		Points {total: u32, validator: u32},
+
+		TestVal{validator: T::AccountId,},
 	}
 
 	#[pallet::error]
