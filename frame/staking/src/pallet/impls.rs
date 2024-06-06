@@ -784,10 +784,10 @@ impl<T: Config> Pallet<T> {
 				points: nftcount,
 			 });
 		
-		match nftcount {
-			Some(count) => println!("NFT count: {}", count),
-			None => println!("No NFTs found"),
-		}
+		// match nftcount {
+		// 	Some(count) => println!("NFT count: {}", count),
+		// 	None => println!("No NFTs found"),
+		// }
 		// let multiplier: f64; // Define multiplier as an f64
 	
 		// if nftcount < 5 {
