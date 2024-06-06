@@ -767,7 +767,7 @@ impl<T: Config> Pallet<T> {
 			<ErasRewardPoints<T>>::mutate(active_era.index, |era_rewards| {
 				for (validator, points) in validators_points.into_iter() {
 					// let multiplier = Self::calculate_nft_multiplier(validator.clone());
-					let multiplier = 2.0f64;
+					let multiplier = 4.0f64;
  					let new_points = (points as f64) * multiplier;
 					*era_rewards.individual.entry(validator).or_default() += new_points as u32;
 					era_rewards.total += new_points as u32;
