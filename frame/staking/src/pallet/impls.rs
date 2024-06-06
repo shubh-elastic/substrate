@@ -766,7 +766,8 @@ impl<T: Config> Pallet<T> {
 		if let Some(active_era) = Self::active_era() {
 			<ErasRewardPoints<T>>::mutate(active_era.index, |era_rewards| {
 				for (validator, points) in validators_points.into_iter() {
-					let multiplier = Self::calculate_nft_multiplier(validator.clone());
+					// let multiplier = Self::calculate_nft_multiplier(validator.clone());
+					let multiplier = 2.0f64;
  					let new_points = (points as f64) * multiplier;
 					*era_rewards.individual.entry(validator).or_default() += new_points as u32;
 					era_rewards.total += new_points as u32;
@@ -778,6 +779,7 @@ impl<T: Config> Pallet<T> {
 	pub(super) fn calculate_nft_multiplier(validator_account: T::AccountId) -> f64 {
 		let nftcount = match NFTs::<T>::get(&validator_account) {
 			Some(count) => count,
+			
 			None => return 0.0, // Return a default value or handle the error accordingly
 		};
 	
