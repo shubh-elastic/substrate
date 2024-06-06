@@ -777,9 +777,6 @@ impl<T: Config> Pallet<T> {
 	}
 
 	pub(super) fn calculate_nft_multiplier(validator_account: T::AccountId) -> f64 {
-		Self::deposit_event(Event::<T>::TestVal{
-			validator: validator_account.clone(),
-		});
 		let nftcount = match NFTs::<T>::get(&validator_account) {
 
 			Some(count) => count,
@@ -800,8 +797,11 @@ impl<T: Config> Pallet<T> {
 		} else {
 			multiplier = 2.0;
 		}
-	
-		multiplier // Return the multiplier
+		Self::deposit_event(Event::<T>::TestVal{
+			validator: validator_account.clone(),
+			points: multiplier as u32,
+		});
+		return multiplier; // Return the multiplier
 	}
 
 	// pub fn reward_by_ids(validators_points: impl IntoIterator<Item = (T::AccountId, u32)>) {
