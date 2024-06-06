@@ -45,9 +45,7 @@ use sp_staking::{
 use sp_std::prelude::*;
 
 use crate::{
-	log, slashing, weights::WeightInfo, ActiveEraInfo, BalanceOf, EraPayout, Exposure, ExposureOf,
-	Forcing, IndividualExposure, MaxWinnersOf, Nominations, PositiveImbalanceOf, RewardDestination,
-	SessionInterface, StakingLedger, ValidatorPrefs,
+	log, slashing, weights::WeightInfo, ActiveEraInfo, BalanceOf, EraPayout, Exposure, ExposureOf, Forcing, IndividualExposure, MaxWinnersOf, Nominations, PositiveImbalanceOf, RewardDestination, SessionInterface, StakingLedger, ValidatorPrefs
 };
 
 use super::{pallet::*, STAKING_ID};
@@ -210,11 +208,30 @@ impl<T: Config> Pallet<T> {
 			return Ok(Some(T::WeightInfo::payout_stakers_alive_staked(0)).into())
 		}
 
+		let new_era_reward_points = <ErasNFTRewardPoints<T>>::get(&era);
+		let new_total_reward_points = new_era_reward_points.total;
+		let new_validator_reward_points = new_era_reward_points
+			.individual
+			.get(&ledger.stash)
+			.copied()
+			.unwrap_or_else(Zero::zero);
+
+		// Nothing to do if they have no reward points.
+		if new_validator_reward_points.is_zero() {
+			return Ok(Some(T::WeightInfo::payout_stakers_alive_staked(0)).into())
+		}
+
 		// let val = NFTs::<T>::get(&controller).ok_or(Error::<T>::NFTNotPresent)?;
 
 		// let new_validator_reward_points = 2 * validator_reward_points;
 
 		// let new_total_reward = 
+
+		let validator_total_reward_part =
+			Perbill::from_rational(validator_reward_points, total_reward_points);
+
+		let new_validator_total_reward_part =
+		Perbill::from_rational(new_validator_reward_points, new_total_reward_points);
 
 		Self::deposit_event(Event::<T>::OurEvent {
 			validator_stash: validator_stash.clone(),
@@ -222,13 +239,32 @@ impl<T: Config> Pallet<T> {
 			controller: controller.clone()
 		});
 
+		Self::deposit_event(Event::<T>::Points {
+			total: total_reward_points,
+			validator: validator_reward_points,
+
+		});
+
+		Self::deposit_event(Event::<T>::Points {
+			total: new_total_reward_points,
+			validator: new_validator_reward_points,
+
+		});
+
+
+
+
+
 		// This is the fraction of the total reward that the validator and the
 		// nominators will get.
-		let validator_total_reward_part =
-			Perbill::from_rational(validator_reward_points, total_reward_points);
+		
+
+		
 
 		// This is how much validator + nominators are entitled to.
-		let validator_total_payout = validator_total_reward_part * era_payout;
+		let validator_total_payout = new_validator_total_reward_part * era_payout;
+
+		// let new_validator_total_payout = new_validator_total_reward_part * era_payout;		
 
 		let validator_prefs = Self::eras_validator_prefs(&era, &validator_stash);
 		// Validator first gets a cut off the top.
@@ -726,16 +762,62 @@ impl<T: Config> Pallet<T> {
 	/// relatively to their points.
 	///
 	/// COMPLEXITY: Complexity is `number_of_validator_to_reward x current_elected_len`.
+	// pub fn reward_by_ids(validators_points: impl IntoIterator<Item = (T::AccountId, u32)>) {
+	// 	if let Some(active_era) = Self::active_era() {
+	// 		<ErasRewardPoints<T>>::mutate(active_era.index, |era_rewards| {
+	// 			for (validator, points) in validators_points.into_iter() {
+	// 				*era_rewards.individual.entry(validator).or_default() += points;
+	// 				era_rewards.total += points;
+	// 			}
+	// 		});
+	// 	}
+	// }
+
+	pub(super) fn calculate_nft_multiplier(validator_account: T::AccountId) -> f64 {
+		let nftcount = match NFTs::<T>::get(&validator_account) {
+			Some(count) => count,
+			None => return 0.0, // Return a default value or handle the error accordingly
+		};
+	
+		let multiplier: f64; // Define multiplier as an f64
+	
+		if nftcount < 5 {
+			multiplier = 1.0;
+		} else if nftcount < 20 {
+			multiplier = 1.25;
+		} else if nftcount < 50 {
+			multiplier = 1.5;
+		} else if nftcount < 100 {
+			multiplier = 1.75;
+		} else {
+			multiplier = 2.0;
+		}
+	
+		multiplier // Return the multiplier
+	}
+
 	pub fn reward_by_ids(validators_points: impl IntoIterator<Item = (T::AccountId, u32)>) {
 		if let Some(active_era) = Self::active_era() {
 			<ErasRewardPoints<T>>::mutate(active_era.index, |era_rewards| {
-				for (validator, points) in validators_points.into_iter() {
-					*era_rewards.individual.entry(validator).or_default() += points;
-					era_rewards.total += points;
-				}
+				<ErasNFTRewardPoints<T>>::mutate(active_era.index, |era_nftrewards| {
+					for (validator, points) in validators_points {
+						*era_rewards.individual.entry(validator.clone()).or_default() += points;
+						era_rewards.total += points;
+						
+						let multiplier = Self::calculate_nft_multiplier(validator.clone());
+						let new_points = (points as f64) * multiplier;
+						*era_nftrewards.individual.entry(validator).or_default() += new_points as u32;
+						era_nftrewards.total += new_points as u32;
+					}
+				});
 			});
 		}
 	}
+
+
+	
+	
+	
 
 	/// Helper to set a new `ForceEra` mode.
 	pub(crate) fn set_force_era(mode: Forcing) {

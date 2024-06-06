@@ -328,6 +328,7 @@ use sp_staking::{
 	EraIndex, OnStakingUpdate, SessionIndex,
 };
 use sp_std::{collections::btree_map::BTreeMap, prelude::*};
+
 pub use weights::WeightInfo;
 
 pub use pallet::{pallet::*, UseNominatorsAndValidatorsMap, UseValidatorsMap};
@@ -386,6 +387,11 @@ pub struct EraRewardPoints<AccountId: Ord> {
 	/// The reward points earned by a given validator.
 	pub individual: BTreeMap<AccountId, RewardPoint>,
 }
+
+
+
+
+
 
 impl<AccountId: Ord> Default for EraRewardPoints<AccountId> {
 	fn default() -> Self {

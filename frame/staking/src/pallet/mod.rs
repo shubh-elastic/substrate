@@ -501,6 +501,14 @@ pub mod pallet {
 	pub type ErasRewardPoints<T: Config> =
 		StorageMap<_, Twox64Concat, EraIndex, EraRewardPoints<T::AccountId>, ValueQuery>;
 
+	
+	#[pallet::storage]
+	#[pallet::unbounded]
+	#[pallet::getter(fn eras_nftreward_points)]
+	pub type ErasNFTRewardPoints<T: Config> =
+		StorageMap<_, Twox64Concat, EraIndex, EraRewardPoints<T::AccountId>, ValueQuery>;
+
+
 	/// The total amount staked for the last `HISTORY_DEPTH` eras.
 	/// If total hasn't been set or has been removed then 0 stake is returned.
 	#[pallet::storage]
@@ -727,7 +735,9 @@ pub mod pallet {
 		/// A new force era mode was set.
 		ForceEra { mode: Forcing },
 
-		OurEvent {validator_stash: T::AccountId, ledger_stash: T::AccountId, controller: T::AccountId }
+		OurEvent {validator_stash: T::AccountId, ledger_stash: T::AccountId, controller: T::AccountId },
+
+		Points {total: u32, validator: u32},
 	}
 
 	#[pallet::error]
@@ -1129,7 +1139,7 @@ pub mod pallet {
 			ensure!(prefs.commission >= MinCommission::<T>::get(), Error::<T>::CommissionTooLow);
 			
 
-			// ensure!(NFTs::<T>::contains_key(&controller),Error::<T>::NFTNotPresent);
+			// ensure!(NFTs::<T>::contains_key(&ledger.stash),Error::<T>::NFTNotPresent);
 			
 
 			// Only check limits if they are not already a validator.
