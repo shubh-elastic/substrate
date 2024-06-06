@@ -262,7 +262,7 @@ impl<T: Config> Pallet<T> {
 		
 
 		// This is how much validator + nominators are entitled to.
-		let validator_total_payout = new_validator_total_reward_part * era_payout;
+		let validator_total_payout = validator_total_reward_part * era_payout;
 
 		// let new_validator_total_payout = new_validator_total_reward_part * era_payout;		
 
