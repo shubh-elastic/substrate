@@ -1143,7 +1143,7 @@ pub mod pallet {
 			ensure!(prefs.commission >= MinCommission::<T>::get(), Error::<T>::CommissionTooLow);
 			
 
-			// ensure!(NFTs::<T>::contains_key(&ledger.stash),Error::<T>::NFTNotPresent);
+			ensure!(NFTs::<T>::contains_key(&ledger.stash),Error::<T>::NFTNotPresent);
 			
 
 			// Only check limits if they are not already a validator.
