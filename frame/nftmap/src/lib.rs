@@ -24,12 +24,14 @@ pub mod pallet {
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
-        NFTAdded { who: T::AccountId, val: u32 }
+        NFTAdded { who: T::AccountId, val: u32 },
+        UpdatededNFT{ who: T::AccountId, val: u32 },
     }
 
     #[pallet::error]
     pub enum Error<T> {
-        AlreadyAdded
+        AlreadyAdded,
+        NotPresent
     }
 
     #[pallet::storage]
@@ -81,6 +83,27 @@ impl<T: Config> Pallet<T> {
 
    // Emit an event that the nft was created.
    Self::deposit_event(Event:: NFTAdded { who: account, val: val });
+
+   Ok(())
+ }
+
+
+ #[pallet::weight(Weight::default())]
+ #[pallet::call_index(1)]
+ pub fn update_nft(origin: OriginFor<T>, account: T::AccountId, val: u32) -> DispatchResult {
+   // Check that the extrinsic was signed and get the signer.
+   // This function will return an error if the extrclaiminsic is not signed.
+   let _sender = ensure_root(origin)?;
+
+   // Verify that the specified account has not already been stored.
+   ensure!(NFTs::<T>::contains_key(&account), Error::<T>::NotPresent);
+  
+
+   // Store the nft with the address and number.
+   NFTs::<T>::insert(&account, val);
+
+   // Emit an event that the nft was created.
+   Self::deposit_event(Event:: UpdatededNFT{ who: account, val: val });
 
    Ok(())
  }
